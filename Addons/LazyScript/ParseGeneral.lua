@@ -1906,6 +1906,31 @@ function lazyScript.bitParsers.ifTargetClass(bit, actions, masks)
 	return true
 end
 
+function lazyScript.masks.PlayerLevel(gtLtEq, val)
+	return function()
+		local tLevel = UnitLevel("player")
+		if (gtLtEq == ">") then
+			return (tLevel > val)
+			elseif (gtLtEq == "=") then
+			return (tLevel == val)
+			else
+			return (tLevel < val)
+		end
+	end
+end
+
+function lazyScript.bitParsers.ifPlayerLevel(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^if(Not)?PlayerLevel([<=>])(%d+)$")) then
+		return false
+	end
+	table.insert(masks, lazyScript.masks.HaveTarget)
+	table.insert(masks, lazyScript.negWrapper(lazyScript.masks.TargetBoss, true))
+	local negate = lazyScript.negate1()
+	local gtLtEq = lazyScript.match2
+	local val = tonumber(lazyScript.match3)
+	table.insert(masks, lazyScript.negWrapper(lazyScript.masks.PlayerLevel(gtLtEq, val), negate))
+	return true
+end
 
 function lazyScript.masks.TargetLevel(gtLtEq, val)
 	return function()

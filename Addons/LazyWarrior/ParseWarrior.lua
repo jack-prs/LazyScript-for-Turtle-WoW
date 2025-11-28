@@ -268,14 +268,93 @@ function lazyWarriorLoad.LoadParseWarrior()
 	lazyWarrior.defaultForms.tank = {
 		"berserkerRage-ifPlayerIs=Feared",
 		"use=Major Healing Potion-ifInCombat-ifPlayer<10%hp",
-		"battleShout-ifNotInCombat-ifNotHistory<5=battleShout",
 		"stopAll-ifTargetIs=CCd",
 		"taunt-ifNotTargetOfTarget-ifTargetHasTarget",
 		"mockingBlow-ifNotTargetOfTarget-ifTargetHasTarget",
 		"battleShout-ifNotPlayerHasBuff=battleShout",
 		"demoShout-ifNotTargetHasDebuff=demoShout",
 		"sunder-ifTargetHasDebuff<5=sunder",
-		"heroicStrike",
+		"heroicStrike-if>50rage",
+	}
+
+	lazyWarrior.defaultForms.nineteen = {
+		"stop-ifPlayerLevel>19",
+		"rend-ifNotTargetHasDebuff=rend-ifTarget>95%hp",
+		"rend-ifNotTargetHasDebuff=rend-ifTimeToDeath>9s",
+		"heroicStrike-if>25rage"
+	}
+	lazyWarrior.defaultForms.twentyone = {
+		"stop-ifPlayerLevel>21",
+		"rend-ifNotTargetHasDebuff=rend-ifTarget>95%hp",
+		"rend-ifNotTargetHasDebuff=rend-ifTimeToDeath>9s",
+		"sunder-ifTargetHasDebuff<5=sunder-ifTarget>70%hp",
+		"heroicStrike-if>95rage"
+	}
+	lazyWarrior.defaultForms.twentyfive = {
+		"stop-ifPlayerLevel>25",
+		"rend-ifNotTargetHasDebuff=rend-ifTarget>95%hp",
+		"rend-ifNotTargetHasDebuff=rend-ifTimeToDeath>9s",
+		"sunder-ifTargetHasDebuff<5=sunder-ifTarget>50%hp",
+		"heroicStrike-if>75rage"
+	}
+	lazyWarrior.defaultForms.thirtyfive = {
+		"stop-ifPlayerLevel>35",
+		"rend-ifNotTargetHasDebuff=rend-ifTarget>95%hp",
+		"rend-ifNotTargetHasDebuff=rend-ifTimeToDeath>9s",
+		"sunder-ifTargetHasDebuff<5=sunder-ifTarget>50%hp",
+		"hamstring"
+	}
+	lazyWarrior.defaultForms.thirtynine = {
+		"stop-ifPlayerLevel>39",
+		"rend-ifNotTargetHasDebuff=rend-ifTimeToDeath>15s",
+		"sunder-ifTargetHasDebuff<5=sunder-ifTarget>85%hp",
+		"whirlwind",
+		"hamstring-if>45rage"
+	}
+	lazyWarrior.defaultForms.fourtyfive = {
+		"stop-ifPlayerLevel>45",
+		"rend-ifNotTargetHasDebuff=rend-ifTimeToDeath>15s",
+		"sunder-ifTargetHasDebuff<5=sunder-ifTarget=100%hp",
+		"mortalStrike",
+		"whirlwind"
+	}
+	lazyWarrior.defaultForms.fiftyseven = {
+		"stop-ifPlayerLevel>57",
+		"sunder-ifTargetHasDebuff<5=sunder-ifTarget>80%hp",
+		"mortalStrike",
+		"whirlwind"
+	}
+	lazyWarrior.defaultForms.sixty = {
+		"stop-ifPlayerLevel>60",
+		"sunder-ifTargetHasDebuff<5=sunder-ifTarget>55%hp",
+		"mortalStrike",
+		"whirlwind"
+	}
+
+	lazyWarrior.defaultForms.core = {
+		"stop-ifPlayerHasBuffTitle=Bladestorm",
+		"battleShout-ifNotInCombat-ifBuffDuration<60s=battleShout",
+		"stop-ifNotTargetHostile-ifNotTargetAlive",
+		"autoAttack",
+		"battleShout-ifNotPlayerHasBuff=battleShout",
+		"charge-ifNotInCombat-ifShiftDown",
+		"bloodrage",
+		"hamstring-ifNotTargetNPC-ifNotTargetHasDebuff=hamstring",
+		"overpower",
+		"revenge",
+		-- "sunder-ifTargetHasDebuff=sunder-ifDebuffDuration<15s=sunder",
+		"sweepingStrikes",
+		"rend-ifNotTargetHasDebuff=rend-ifNotTargetNPC-ifTargetClass={Druid,Rogue}",
+		"rend-ifNotTargetHasDebuff=rend-ifTargetHasBuffTitle={Evasion,Deterrance}",
+		"stop-ifPlayerLevel>30-ifNotInCooldown=sweepingStrikes",
+		"includeForm=nineteen",
+		"includeForm=twentyone",
+		"includeForm=twentyfive",
+		"includeForm=thirtyfive",
+		"includeForm=thirtynine",
+		"includeForm=fourtyfive",
+		"includeForm=fiftyseven",
+		"includeForm=sixty",
 	}
 
 	-- Custom data
