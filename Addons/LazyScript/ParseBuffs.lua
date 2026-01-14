@@ -1245,3 +1245,61 @@ function lazyScript.masks.FindBuffsByCategory(category)
 	return buffs
 
 end
+
+
+-- Cursive addon integration
+-----------------------------
+-- Functions for checking target debuff duration using the Cursive addon.
+-- Cursive tracks debuffs you apply to enemies and requires SuperWoW for GUID support.
+
+function lazyScript.HasCursive()
+    return Cursive and Cursive.curses and Cursive.superwow
+end
+
+function lazyScript.masks.CheckTargetDebuffDurationCursive(spellName, gtLt, val)
+    return function(sayNothing)
+        if not lazyScript.HasCursive() then
+            return false
+        end
+        
+        local _, guid = UnitExists("target")
+        if not guid then
+            return false
+        end
+        
+        local lowercaseName = string.lower(spellName)
+        local curseData = Cursive.curses:GetCurseData(lowercaseName, guid)
+        
+        local timeRemaining = 0
+        if curseData then
+            timeRemaining = Cursive.curses:TimeRemaining(curseData)
+        end
+        
+        if not sayNothing then
+            lazyScript.d("CheckTargetDebuffDurationCursive: "..spellName.." timeRemaining: "..timeRemaining)
+        end
+        
+        if gtLt == "<" then
+            return timeRemaining < val
+        elseif gtLt == ">" then
+            return timeRemaining > val
+        end
+        return false
+    end
+end
+
+function lazyScript.bitParsers.ifTargetDebuffDuration(bit, actions, masks)
+    if (not lazyScript.rebit(bit, "^ifTargetDebuffDuration([<>])(%d+%.?%d*)s=(.+)$")) then
+        return false
+    end
+    
+    local gtLt = lazyScript.match1
+    local val = tonumber(lazyScript.match2)
+    local spellName = lazyScript.match3
+    
+    table.insert(masks, lazyScript.masks.UnitExists("target"))
+    table.insert(masks, lazyScript.masks.CheckTargetDebuffDurationCursive(spellName, gtLt, val))
+    
+    return true
+end
+
