@@ -1128,6 +1128,62 @@ function lazyScript.bitParsers.ifBehindAttackJustFailed(bit, actions, masks)
 end
 
 
+function lazyScript.masks.Behind(unit)
+	return function(sayNothing)
+		if not UnitXP then return true end
+		local behind = UnitXP("behind", "player", unit);
+		return behind == true or behind == 1
+	end
+end
+
+--[[
+Parser for conditional behind/not-behind checks.
+
+Syntax:
+- ifBehind[unit] - Execute only if behind the specified unit
+- ifNotBehind[unit] - Execute only if not behind the specified unit
+
+Parameters:
+- unit: Optional unit ID (defaults to "target")
+  Valid unit IDs include: "target", "focus", "player", "party1", "party2", etc.
+
+Examples:
+- ifBehind - Check if behind target
+- ifBehind[focus] - Check if behind focus target
+- ifNotBehind - Check if not behind target
+
+Returns:
+- true if condition is met, false otherwise
+]]
+function lazyScript.bitParsers.ifBehind(bit, actions, masks)
+	if not lazyScript.rebit(bit, "^if(Not)?Behind([A-Z][a-zA-Z]*)?$") then
+		return false
+	end
+
+	local negate = lazyScript.negate1()
+	local unit = lazyScript.match2
+
+	if unit ~= nil and unit ~= "" then
+		unit = string.lower(unit)
+		if lazyScript.validateUnitId and not lazyScript.validateUnitId(unit) then
+			lazyScript.p("Invalid unit ID: " .. unit)
+			return false
+		end
+	else
+		unit = "target"
+	end
+
+	table.insert(
+		masks,
+		lazyScript.negWrapper(
+			lazyScript.masks.Behind(unit),
+			negate
+		)
+	)
+
+	return true
+end
+
 function lazyScript.masks.InFrontAttackFailedRecently(timeout)
 	return function()
 		return ((GetTime() - lazyScript.inFrontAttackLastFailedAt) < timeout)

@@ -149,10 +149,10 @@ function lazyPaladinLoad.LoadParsePaladin()
 	-- "return function() ... end" inside the mask function, everything else will be evaluated at
 	-- the time that the mask is parsed.
 
-	-- 通过SP_SwingTimer插件判断平砍时间
+	-- Check swing timer using SP_SwingTimer plugin if available
 	function lazyPaladin.masks.isSwinged()
 		if not st_timer then
-			lazyPaladin.p("need SP_SwingTimer.")
+			-- SP_SwingTimer not available, return false gracefully
 			return false
 		end
 		if st_timer + 1 > UnitAttackSpeed("player") then

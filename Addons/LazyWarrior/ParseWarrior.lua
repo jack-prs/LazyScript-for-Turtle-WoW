@@ -1,4 +1,4 @@
-﻿lazyWarriorLoad.metadata:updateRevisionFromKeyword("$Revision: 740 $")
+lazyWarriorLoad.metadata:updateRevisionFromKeyword("$Revision: 740 $")
 
 function lazyWarriorLoad.LoadParseWarrior()
 
@@ -110,7 +110,6 @@ function lazyWarriorLoad.LoadParseWarrior()
 				return false
 			end
 
-			local targethp = 0
 			targetHp = MobHealth_GetTargetMaxHP() * (goalPct / 100)
 			local currentHp = lazyWarrior.masks.GetUnitHealth("target", false, false, sayNothing)
 
@@ -124,7 +123,7 @@ function lazyWarriorLoad.LoadParseWarrior()
 			end
 			local bloodthirstDamage = (base + posBuff + negBuff) * 0.45;
 
-			if ((currentHp - bloodthirstDamage) <= targethp) then
+			if ((currentHp - bloodthirstDamage) <= targetHp) then
 				lazyWarrior.d(WARRIOR_EARLY_BLOODTHIRST)
 				return true
 				else
@@ -186,10 +185,10 @@ function lazyWarriorLoad.LoadParseWarrior()
 		return true
 	end
 
-	-- 通过SP_SwingTimer插件判断平砍时间
+	-- Check swing timer using SP_SwingTimer plugin if available
 	function lazyWarrior.masks.isSwinged()
 		if not st_timer then
-			lazyWarrior.p("need SP_SwingTimer.")
+			-- SP_SwingTimer not available, return false gracefully
 			return false
 		end
 		if st_timer + 1 > UnitAttackSpeed("player") then

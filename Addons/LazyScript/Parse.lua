@@ -81,6 +81,10 @@ function lazyScript.ParseLine(line)
 
 		local foundBit = false
 		for key, bitParser in pairs(lazyScript.bitParsers) do
+			if bitParser == nil then
+				-- Skip nil parsers to prevent infinite loops
+				break
+			end
 			local bitResult = bitParser(bit, actions, masks)
 			if (bitResult) then
 				-- success
