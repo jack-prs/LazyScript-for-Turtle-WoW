@@ -1461,7 +1461,20 @@ function lazyScript.bitParsers.ifTargetElite(bit, actions, masks)
 end
 
 function lazyScript.masks.TargetBoss(sayNothing)
-	return UnitClassification("target") == "worldboss"
+	-- Defensive check: ensure we have a target
+	if not UnitExists("target") then
+		return false
+	end
+
+	-- Check for world bosses first (cheaper API call)
+	local classification = UnitClassification("target")
+	if classification == "worldboss" then
+		return true
+	end
+
+	-- Check for dungeon/raid bosses (level == -1)
+	local level = UnitLevel("target")
+	return level == -1
 end
 
 function lazyScript.bitParsers.ifTargetBoss(bit, actions, masks)
