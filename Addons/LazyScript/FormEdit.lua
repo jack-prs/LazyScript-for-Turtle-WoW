@@ -407,7 +407,7 @@ function lazyScript.formHelp.SetupCriteria()
 	text = text.."<P>-if[Not]HaveTarget</P>"
 	text = text.."<P>-if[Not]TargetAlive</P>"
 	text = text.."<P>-if[Not]TargetAttackable</P>"
-	text = text.."<P>-if[Not]TargetBoss</P>"
+	text = text.."<P>-if[Not]TargetBoss |cffffff00(World or dungeon/raid boss)|r</P>"
 	text = text.."<P>-if[Not]TargetClass={Druid, Hunter, Mage, Paladin, Priest, Rogue, Shaman, Warlock, Warrior}</P>"
 	text = text.."<P>-if[Not]TargetElite</P>"
 	text = text.."<P>-if[Not]TargetEnemy</P>"
