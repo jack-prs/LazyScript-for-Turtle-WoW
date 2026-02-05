@@ -1247,18 +1247,19 @@ function lazyScript.masks.FindBuffsByCategory(category)
 end
 
 
--- Cursive addon integration
+-- pfUI libdebuff integration
 -----------------------------
--- Functions for checking target debuff duration using the Cursive addon.
--- Cursive tracks debuffs you apply to enemies and requires SuperWoW for GUID support.
+-- Functions for checking target debuff duration using pfUI's libdebuff library.
+-- libdebuff tracks all debuffs on targets using GetUnitField for accurate GUID-based tracking.
+-- This replaces the previous Cursive addon integration.
 
-function lazyScript.HasCursive()
-    return Cursive and Cursive.curses and Cursive.superwow
+function lazyScript.HasLibDebuff()
+    return pfUI and pfUI.api and pfUI.api.libdebuff
 end
 
-function lazyScript.masks.CheckTargetDebuffDurationCursive(spellName, gtLt, val)
+function lazyScript.masks.CheckTargetDebuffDurationLibDebuff(spellName, gtLt, val, ownOnly)
     return function(sayNothing)
-        if not lazyScript.HasCursive() then
+        if not lazyScript.HasLibDebuff() then
             return false
         end
         
@@ -1266,17 +1267,27 @@ function lazyScript.masks.CheckTargetDebuffDurationCursive(spellName, gtLt, val)
         if not guid then
             return false
         end
-        
-        local lowercaseName = string.lower(spellName)
-        local curseData = Cursive.curses:GetCurseData(lowercaseName, guid)
-        
+
         local timeRemaining = 0
-        if curseData then
-            timeRemaining = Cursive.curses:TimeRemaining(curseData)
-        end
+        local startTime, duration, timeleft, rank, casterGuid = pfUI.api.libdebuff:GetBestAuraCast(guid, spellName)
         
+        if timeleft then
+            timeRemaining = timeleft
+            if ownOnly and casterGuid then
+                local playerGuid = nil
+                if UnitExists then
+                    local _, pguid = UnitExists("player")
+                    playerGuid = pguid
+                end
+                -- Filter to only our debuffs if requested
+                if casterGuid ~= playerGuid then
+                    timeRemaining = 0
+                end
+            end
+        end
+
         if not sayNothing then
-            lazyScript.d("CheckTargetDebuffDurationCursive: "..spellName.." timeRemaining: "..timeRemaining)
+            lazyScript.d("CheckTargetDebuffDurationLibDebuff: "..spellName.." timeRemaining: "..timeRemaining)
         end
         
         if gtLt == "<" then
@@ -1292,14 +1303,30 @@ function lazyScript.bitParsers.ifTargetDebuffDuration(bit, actions, masks)
     if (not lazyScript.rebit(bit, "^ifTargetDebuffDuration([<>])(%d+%.?%d*)s=(.+)$")) then
         return false
     end
-    
+
     local gtLt = lazyScript.match1
     local val = tonumber(lazyScript.match2)
     local spellName = lazyScript.match3
-    
+
     table.insert(masks, lazyScript.masks.UnitExists("target"))
-    table.insert(masks, lazyScript.masks.CheckTargetDebuffDurationCursive(spellName, gtLt, val))
-    
+    table.insert(masks, lazyScript.masks.CheckTargetDebuffDurationLibDebuff(spellName, gtLt, val, false))
+
     return true
 end
+
+-- Legacy Cursive addon integration (deprecated - kept for reference)
+------------------------------------------------------------
+-- The following functions are deprecated and no longer used.
+-- They are kept here temporarily for backward compatibility reference.
+-- All debuff duration tracking now uses pfUI's libdebuff library.
+--[[
+function lazyScript.HasCursive()
+    return Cursive and Cursive.curses and Cursive.superwow
+end
+
+function lazyScript.masks.CheckTargetDebuffDurationCursive(spellName, gtLt, val)
+    -- Deprecated: Use CheckTargetDebuffDurationLibDebuff instead
+    return lazyScript.masks.CheckTargetDebuffDurationLibDebuff(spellName, gtLt, val, false)
+end
+--]]
 
