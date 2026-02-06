@@ -1252,9 +1252,38 @@ end
 -- Functions for checking target debuff duration using pfUI's libdebuff library.
 -- libdebuff tracks all debuffs on targets using GetUnitField for accurate GUID-based tracking.
 -- This replaces the previous Cursive addon integration.
+--
+-- Requirements: pfUI v7.6.0+ with Nampower 2.27.2+ for full functionality
+-- The libdebuff library uses GetUnitField for server-accurate debuff tracking.
 
 function lazyScript.HasLibDebuff()
     return pfUI and pfUI.api and pfUI.api.libdebuff
+end
+
+-- Check if Nampower is available and meets minimum version requirement
+-- Returns: hasNampower (boolean), versionString (string), isCompatible (boolean)
+function lazyScript.CheckNampowerVersion()
+    if not GetNampowerVersion then
+        return false, "Not Installed", false
+    end
+    
+    local major, minor, patch = GetNampowerVersion()
+    patch = patch or 0
+    local versionString = string.format("%d.%d.%d", major, minor, patch)
+    
+    -- Check minimum version: 2.27.2 (required for SPELL_FAILED_OTHER fix)
+    local isCompatible = false
+    if major > 2 then
+        isCompatible = true
+    elseif major == 2 then
+        if minor > 27 then
+            isCompatible = true
+        elseif minor == 27 and patch >= 2 then
+            isCompatible = true
+        end
+    end
+    
+    return true, versionString, isCompatible
 end
 
 function lazyScript.masks.CheckTargetDebuffDurationLibDebuff(spellName, gtLt, val, ownOnly)
@@ -1310,6 +1339,24 @@ function lazyScript.bitParsers.ifTargetDebuffDuration(bit, actions, masks)
 
     table.insert(masks, lazyScript.masks.UnitExists("target"))
     table.insert(masks, lazyScript.masks.CheckTargetDebuffDurationLibDebuff(spellName, gtLt, val, false))
+
+    return true
+end
+
+-- Parser for checking ONLY player's own debuffs on target
+-- Syntax: ifTargetOwnDebuffDuration{<,>}XXs=spellName
+-- Example: ifTargetOwnDebuffDuration<3s=Rupture (checks if player's Rupture has <3s remaining)
+function lazyScript.bitParsers.ifTargetOwnDebuffDuration(bit, actions, masks)
+    if (not lazyScript.rebit(bit, "^ifTargetOwnDebuffDuration([<>])(%d+%.?%d*)s=(.+)$")) then
+        return false
+    end
+
+    local gtLt = lazyScript.match1
+    local val = tonumber(lazyScript.match2)
+    local spellName = lazyScript.match3
+
+    table.insert(masks, lazyScript.masks.UnitExists("target"))
+    table.insert(masks, lazyScript.masks.CheckTargetDebuffDurationLibDebuff(spellName, gtLt, val, true))
 
     return true
 end
