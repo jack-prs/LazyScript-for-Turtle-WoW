@@ -404,6 +404,8 @@ function lazyScript.formHelp.SetupCriteria()
 	text = text.."<P>-if[Not]PartyHaveClass={Druid, Hunder, Mage, Paladin, Priest, Rogue, Shaman, Warlock, Warrior}</P><BR/>"
 	text = text..TAB_CRITERIA_TARGET
 	text = text.."<P>-if[Not]CanDebuff</P>"
+	text = text.."<P>-if[Not]TargetDebuffDuration{&lt;,&gt;}XXs=spellName |cffffff00(pfUI libdebuff required)|r</P>"
+	text = text.."<P>-if[Not]TargetOwnDebuffDuration{&lt;,&gt;}XXs=spellName |cffffff00(your debuffs only, pfUI libdebuff required)|r</P>"
 	text = text.."<P>-if[Not]HaveTarget</P>"
 	text = text.."<P>-if[Not]TargetAlive</P>"
 	text = text.."<P>-if[Not]TargetAttackable</P>"
