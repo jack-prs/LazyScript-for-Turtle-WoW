@@ -3216,6 +3216,59 @@ function lazyScript.bitParsers.ifWeaponBuffed(bit, actions, masks)
 end
 
 
+-- Checks the main-hand weapon's inventory type (equipLoc from GetItemInfo).
+-- equipLoc is a non-localized string, so this works for all client languages.
+--   INVTYPE_2HWEAPON       = Two-handed weapons (swords, axes, maces, polearms, staves)
+--   INVTYPE_WEAPON         = One-handed weapons (equippable in either hand)
+--   INVTYPE_WEAPONMAINHAND = Main-hand-only one-handed weapons
+function lazyScript.masks.isMainHandTwoHanded()
+	local slot = GetInventorySlotInfo("MainHandSlot")
+	local link = GetInventoryItemLink("player", slot)
+	if link then
+		local id, name = lazyScript.IdAndNameFromLink(link)
+		if id then
+			local _, _, _, _, _, _, _, _, equipLoc = GetItemInfo(id)
+			if equipLoc == "INVTYPE_2HWEAPON" then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function lazyScript.masks.isMainHandOneHanded()
+	local slot = GetInventorySlotInfo("MainHandSlot")
+	local link = GetInventoryItemLink("player", slot)
+	if link then
+		local id, name = lazyScript.IdAndNameFromLink(link)
+		if id then
+			local _, _, _, _, _, _, _, _, equipLoc = GetItemInfo(id)
+			if equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND" then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function lazyScript.bitParsers.ifMainHandIsTwoHanded(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^if(Not)?MainHandIsTwoHanded$")) then
+		return false
+	end
+	local negate = lazyScript.negate1()
+	table.insert(masks, lazyScript.negWrapper(lazyScript.masks.isMainHandTwoHanded, negate))
+	return true
+end
+
+function lazyScript.bitParsers.ifMainHandIsOneHanded(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^if(Not)?MainHandIsOneHanded$")) then
+		return false
+	end
+	local negate = lazyScript.negate1()
+	table.insert(masks, lazyScript.negWrapper(lazyScript.masks.isMainHandOneHanded, negate))
+	return true
+end
+
 
 -- Utility functions
 --------------------

@@ -68,6 +68,8 @@ Player Criteria:
 ```
 	-if[Not]Dueling
 	-if[Not]Equipped=item
+	-if[Not]MainHandIsTwoHanded
+	-if[Not]MainHandIsOneHanded
 	-if[Not]Ganked
 	-if[Not]InGroup (party or raid)
 	-if[Not]InInstance

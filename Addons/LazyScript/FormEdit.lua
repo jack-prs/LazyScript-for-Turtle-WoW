@@ -378,6 +378,8 @@ function lazyScript.formHelp.SetupCriteria()
 	text = text..TAB_CRITERIA_PLAYER
 	text = text.."<P>-if[Not]Dueling</P>"
 	text = text.."<P>-if[Not]Equipped=item</P>"
+	text = text.."<P>-if[Not]MainHandIsTwoHanded</P>"
+	text = text.."<P>-if[Not]MainHandIsOneHanded</P>"
 	text = text.."<P>-if[Not]Ganked</P>"
 	text = text.."<P>-if[Not]InGroup |cffffff00("..TAB_CRITERIA_PARTY_OR_RAID..")|r</P>"
 	text = text.."<P>-if[Not]InInstance</P>"
